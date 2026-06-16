@@ -1,0 +1,185 @@
+<div class="faq-section">
+  <div class="faq-section__inner">
+
+    <h2 class="faq-section__heading">{{ section.settings.heading }}</h2>
+
+    <ul class="faq-list">
+
+      {% for block in section.blocks %}
+        <li class="faq-list__item" {{ block.shopify_attributes }}>
+          <button class="faq-list__question" aria-expanded="false">
+            <span>{{ block.settings.question }}</span>
+            <span class="faq-list__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-list__answer">
+            <p>{{ block.settings.answer }}</p>
+          </div>
+        </li>
+      {% endfor %}
+
+    </ul>
+
+  </div>
+</div>
+
+{% stylesheet %}
+.faq-section {
+  padding: 60px 20px;
+}
+
+.faq-section__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.faq-section__heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 40px;
+}
+
+.faq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.faq-list__item {
+  border-top: 1px solid #e5e5e5;
+}
+
+.faq-list__item:last-child {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.faq-list__question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  color: inherit;
+  gap: 16px;
+}
+
+.faq-list__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+
+.faq-list__icon::before,
+.faq-list__icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.faq-list__icon::before {
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.faq-list__icon::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.faq-list__question[aria-expanded="true"] .faq-list__icon::after {
+  opacity: 0;
+  transform: translateX(-50%) rotate(90deg);
+}
+
+.faq-list__answer {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.faq-list__answer p {
+  margin: 0;
+  padding-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.faq-list__item.is-open .faq-list__answer {
+  max-height: 400px;
+}
+{% endstylesheet %}
+
+{% javascript %}
+// jQueryではなくバニラのjsで書かれています
+(function () {
+  const items = document.querySelectorAll('.faq-list__item');
+
+  items.forEach(function (item) {
+    const button = item.querySelector('.faq-list__question');
+
+    button.addEventListener('click', function () {
+      const isOpen = item.classList.contains('is-open');
+
+      items.forEach(function (el) {
+        el.classList.remove('is-open');
+        el.querySelector('.faq-list__question').setAttribute('aria-expanded', 'false');
+      });
+
+      if (!isOpen) {
+        item.classList.add('is-open');
+        button.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "見出し",
+      "default": "よくある質問"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "Q&Aアイテム",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "質問",
+          "default": "質問を入力してください"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "回答",
+          "default": "回答を入力してください"
+        }
+      ]
+    }
+  ],
+  "presets": [{ "name": "FAQ" }]
+}
+{% endschema %}
